@@ -6,7 +6,7 @@ from data.augment import Augmentations
 from data.dataset import CustomDataset
 from pytorch_lightning.loggers import TensorBoardLogger
 import torch.nn as nn
-from get_optim import get_optimizer, get_scheduler
+from get_optim import get_optimizer, get_scheduler, LRSchedulerEnum
 from classifier import Classifier
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
@@ -14,14 +14,66 @@ from focal_loss import FocalLoss
 from datetime import datetime
 import os
 
+from enum import Enum
+
+class OptimizerEnum(Enum):
+    ADAM = "adam"
+    SGD = "sgd"
+    ASGD = "asgd"
+
+    @classmethod
+    def from_value(cls, value):
+        """
+        Validate and return the enum member corresponding to the given value.
+
+        Args:
+            value (str): The optimizer name to validate.
+
+        Returns:
+            OptimizerEnum: The enum member if valid.
+
+        Raises:
+            ValueError: If the given value is not valid.
+        """
+        try:
+            return cls(value)
+        except ValueError:
+            valid_values = ", ".join([member.value for member in cls])
+            raise ValueError(f"Invalid optimizer: '{value}'. Valid options are: {valid_values}")
+
+class LossEnum(Enum):
+    CE = "CE"
+    FOCAL = "focal"
+
+    @classmethod
+    def from_value(cls, value):
+        """
+        Validate and return the enum member corresponding to the given value.
+
+        Args:
+            value (str): The optimizer name to validate.
+
+        Returns:
+            OptimizerEnum: The enum member if valid.
+
+        Raises:
+            ValueError: If the given value is not valid.
+        """
+        try:
+            return cls(value)
+        except ValueError:
+            valid_values = ", ".join([member.value for member in cls])
+            raise ValueError(f"Invalid optimizer: '{value}'. Valid options are: {valid_values}")
+        
+
 @hydra.main(version_base=None, config_path=".", config_name="train")
 def main(cfg: DictConfig):
     # Extract configurations
     model_name = cfg.model_name
-    optimizer_name = cfg.optimizer
+    optimizer_name = OptimizerEnum.from_value(cfg.optimizer).value
     experiment_path = cfg.experiment_path
     num_classes = cfg.num_classes
-    loss_name = cfg.loss
+    loss_name = LossEnum.from_value(cfg.loss).value
     w1 = cfg.w1
     w2 = 1 - w1
     gamma = cfg.gamma
@@ -58,9 +110,10 @@ def main(cfg: DictConfig):
 
     # Loss function
     weights = torch.tensor([w1, w2])
-    if loss_name == 'CE':
+
+    if loss_name == LossEnum.CE.value:
         loss = nn.CrossEntropyLoss(weight=weights)
-    elif loss_name == 'focal':
+    elif loss_name == LossEnum.FOCAL.value:
         loss = FocalLoss(alpha=alpha, gamma=gamma)
 
     # Logger and checkpoint paths
@@ -73,11 +126,12 @@ def main(cfg: DictConfig):
     # Optimizer and scheduler
     optimizer = (
         torch.optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
-        if optimizer_name == 'adam'
+        if optimizer_name == OptimizerEnum.ADAM.value
         else torch.optim.SGD(model.parameters(), lr=learning_rate, weight_decay=weight_decay, momentum=0.9)
-    )
-    scheduler = get_scheduler(cfg, optimizer, len(train_loader))
-
+        )
+    
+    scheduler_name = LRSchedulerEnum.from_value(cfg.lr_scheduler)
+    scheduler = get_scheduler(scheduler_name, optimizer=optimizer, len_dataset=len(train_loader), num_epochs=epochs)
     # Callbacks
     early_stopping_callback = EarlyStopping(monitor='average precision', patience=100)
     checkpoint_callback = ModelCheckpoint(

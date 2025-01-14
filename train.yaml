@@ -3,7 +3,7 @@ val_frequency: 1
 learning_rate: 0.0024435492580773227
 results_metric_path: results.json
 optimizer: 'adam' # 'adam', 'sgd' or 'asgd'
-lr_scheduler: 'cosine' # 'cosine', 'multistep_lr', 'cosine_annealing'
+lr_scheduler: 'cosines' # 'cosine', 'multistep_lr', 'cosine_annealing'
 loss: 'CE' # 'focal', 'CE'
 experiment_path: 'experiments'
 
