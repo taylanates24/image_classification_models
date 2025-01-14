@@ -2,7 +2,6 @@ import hydra
 from omegaconf import DictConfig
 from model import SceneClassifier
 import torch
-from data.augment import Augmentations
 from data.dataset import CustomDataset
 from pytorch_lightning.loggers import TensorBoardLogger
 import torch.nn as nn
