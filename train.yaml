@@ -7,10 +7,6 @@ lr_scheduler: 'cosine' # 'cosine', 'multistep_lr', 'cosine_annealing'
 loss: 'CE' # 'focal', 'CE'
 experiment_path: 'experiments'
 
-
-
-
-
 pred_detections_pth: '/workspaces/scene_classification/pred_boxes_42.json'
 bbox_infer_dataset: '/workspaces/scene_classification/bbox_labels_infer_squared'
 annotations_pth: 'instances_val.json'
@@ -50,7 +46,6 @@ dataset:
     crop:
       ratio: 0.5
       type: 'upper-left'
-
 
   augmentations: 
     - type: "RandomPerspective"
@@ -98,7 +93,5 @@ dataset:
         scale: [0.2, 0.8]
       probability: 0
 
-    
-      
   val_augmentations: 
 
