@@ -1,0 +1,152 @@
+epochs: 20
+val_frequency: 1
+learning_rate: 0.0024435492580773227
+results_metric_path: results.json
+optimizer: 'adam' # 'adam', 'sgd' or 'asgd'
+lr_scheduler: 'cosine' # 'cosine', 'multistep_lr', 'cosine_annealing'
+loss: 'CE' # 'focal', 'CE'
+experiment_path: 'experiments'
+
+model_name: mobilevitv2_200
+
+# 'coat_lite_mini.in1k'
+# 'coat_lite_small.in1k'
+# 'coat_lite_tiny.in1k'
+# 'coat_mini.in1k'
+# 'coat_small.in1k'
+# 'coat_tiny.in1k'
+# 'coat_lite_medium.in1k'
+
+# 'crossvit_9_240.in1k'
+
+# 'cspresnext50.ra_in1k'
+
+# 'davit_tiny.msft_in1k'
+# 'davit_small.msft_in1k'
+# 'davit_base.msft_in1k'
+
+# 'efficientformer_l1.snap_dist_in1k'
+
+# 'focalnet_tiny_lrf.ms_in1k'
+
+# 'gcvit_small.in1k'
+# 'gcvit_tiny.in1k'
+# 'gcvit_xtiny.in1k'
+# 'gcvit_xxtiny.in1k'
+
+# 'hrnet_w18_small.gluon_in1k'
+# 'hrnet_w18_small_v2.gluon_in1k'
+
+# 'inception_next_tiny.sail_in1k'
+# 'inception_next_small.sail_in1k'
+# 'inception_resnet_v2.tf_ens_adv_in1k'
+
+# 'lambda_resnet26rpt_256.c1_in1k'
+# 'lambda_resnet50ts.a1h_in1k'
+
+# 'levit_128.fb_dist_in1k'
+# 'levit_192.fb_dist_in1k'
+# 'levit_conv_128.fb_dist_in1k'
+# 'levit_conv_192.fb_dist_in1k'
+
+# 'mobilenetv2_050.lamb_in1k'
+# 'mobilenetv2_100.ra_in1k'
+# 'mobilenetv2_110d.ra_in1k'
+# 'mobilenetv2_120d.ra_in1k'
+
+# 'mobilevitv2_050.cvnets_in1k'
+
+# 'mvitv2_tiny.fb_in1k'
+# 'mvitv2_small.fb_in1k'
+
+# 'nextvit_small.bd_in1k'
+
+# 'regnetv_040.ra3_in1k'
+
+# 'repvit_m0_9.dist_450e_in1k'
+
+# 'res2net50_14w_8s.in1k'
+
+# 'resnet18d.ra2_in1k'
+# 'resnet26d.bt_in1k'
+# 'resnet26d.bt_in1k'
+# 'resnet26t.ra2_in1k'
+
+# 'tf_mobilenetv3_small_075.in1k'
+
+
+
+num_classes: 2
+
+pred_detections_pth: '/workspaces/scene_classification/pred_boxes_42.json'
+bbox_infer_dataset: '/workspaces/scene_classification/bbox_labels_infer_squared'
+annotations_pth: 'instances_val.json'
+
+gamma: 4.491033147723654
+alpha: 0.9840537807632129
+
+w2: 0.5
+w1: 0.5
+
+weight_decay: 0
+
+dataset:
+  train:
+    image_path: 'video_type_dataset'
+    #image_path: 'bbox_labels_train_squared_lt_detected_png_true'
+    #image_path: 'bbox_labels_overfit'
+    batch_size: 2
+    shuffle: True
+    num_workers: 2
+    img_size: 180
+  val:
+    image_path: 'video_type_dataset'
+    #image_path: 'bbox_labels_val_squared_lt_detected_png_true'
+    #image_path: 'bbox_labels_overfit'
+    batch_size: 2
+    shuffle: False
+    num_workers: 2
+    img_size: 180
+
+  augmentations: # write the desired values, and append the probability, e.g. [val1, val2, probability] or null if that augmentation won't be used.
+    aug_prob: 1
+    letterbox: False
+    resize: [180, 180, 1] # [-5, 5]
+    perspective: [0.15537051180923636, 0.4408902042938045, 0.2]
+    scale: [0.8328283449050006, 1.2671756368206226, 1]
+    translate: [0.1, 0.1, 1]
+    rotate: [-25, 14, 1]
+    affine_prob: 0.2
+    shear: [-7, 6, 1]
+    sharpness: [[0.789154084472079, 2.0699035475278906], 0.6582651561874941, 1]
+    brightness: [0.8210357990446873, 1.0629883203287223, 1]
+    contrast: [0.7297184722236161, 1.1010753374567301, 1]
+    saturation: [0.9736212258902655, 1.008519519994965, 1]
+    hue: [0.1, 0.1, 0]
+    jitter_prob: 0.2
+    add_grayscale: [0.2, 0]
+    fliplr: [0.5, 1]
+    random_crop: [180, [0.2, 0.4], 0.2]
+    center_crop: [0.6, 1, 'center']
+    some_of: None
+
+  val_augmentations: # write the desired values, and append the probability, e.g. [val1, val2, probability] or null if that augmentation won't be used.
+    aug_prob: 0
+    letterbox: False
+    # center_crop_val: [0.6, 0.3, 1, 'upper-left']
+    center_crop: [0.6, 1, 'center']
+    random_crop: [180, [0.2, 0.4], 0.2]
+    resize: [160, 160, 1] # [-5, 5]
+    perspective: [0.2, 0.5, 0]
+    scale: [0.8, 1.2, 0]
+    translate: [0.1, 0.1, 0]
+    rotate: [-30, 30, 0]
+    shear: [-10, 10, 0]
+    sharpness: [[0.8, 2], 1, 0]
+    brightness: [0.8, 1.2, 0]
+    contrast: [0.8, 1.3, 0]
+    saturation: [0.7, 1.3, 0]
+    hue: [0.1, 0.1, 0]
+    add_grayscale: [0.2, 0]
+    fliplr: [0.5, 0]
+    some_of: None
