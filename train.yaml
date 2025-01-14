@@ -1,6 +1,6 @@
 epochs: 20
 val_frequency: 1
-learning_rate: 0.0024435492580773227
+learning_rate: 0.001
 results_metric_path: results.json
 optimizer: 'adam' # 'adam', 'sgd' or 'asgd'
 lr_scheduler: 'cosine' # 'cosine', 'multistep_lr', 'cosine_annealing'
@@ -11,8 +11,10 @@ pred_detections_pth: '/workspaces/scene_classification/pred_boxes_42.json'
 bbox_infer_dataset: '/workspaces/scene_classification/bbox_labels_infer_squared'
 annotations_pth: 'instances_val.json'
 
-model_name: resnet18.a1_in1k
-num_classes: 2
+model:
+  name: resnet18.a1_in1k
+  pretrained: False
+  num_classes: 2
 
 gamma: 4.491033147723654
 alpha: 0.9840537807632129
@@ -51,24 +53,24 @@ dataset:
     - type: "RandomPerspective"
       parameters:
         distortion_scale: 0.15
-        p: 0
+        p: 0.2
     - type: "RandomAffine"
       parameters:
         degrees: 10
         translate: [0.1, 0.1]
         scale: [0.9, 1]
         shear: 0.1
-      probability: 0
+      probability: 0.2
     - type: "RandomHorizontalFlip"
       parameters: {}
-      probability: 0
+      probability: 0.5
     - type: "ColorJitter"
       parameters:
         brightness: [0.8, 1.2]
         contrast: [0.8, 1.2]
         saturation: [0.8, 1.2]
         hue: 0
-      probability: 0
+      probability: 0.2
     - type: "RandomAdjustSharpness"
       parameters:
         sharpness_factor: 0.5
@@ -90,8 +92,8 @@ dataset:
     - type: "RandomResizedCrop"
       parameters:
         size: 180
-        scale: [0.2, 0.8]
-      probability: 0
+        scale: [0.3, 0.7]
+      probability: 0.2
 
   val_augmentations: 
 

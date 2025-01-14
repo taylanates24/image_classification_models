@@ -68,10 +68,13 @@ class LossEnum(Enum):
 @hydra.main(version_base=None, config_path=".", config_name="train")
 def main(cfg: DictConfig):
     # Extract configurations
-    model_name = cfg.model_name
+    model_name = cfg.model.name
+    pretrained = cfg.model.pretrained
+    num_classes = cfg.model.num_classes
+
     optimizer_name = OptimizerEnum.from_value(cfg.optimizer).value
     experiment_path = cfg.experiment_path
-    num_classes = cfg.num_classes
+    
     loss_name = LossEnum.from_value(cfg.loss).value
     w1 = cfg.w1
     w2 = 1 - w1
@@ -87,7 +90,7 @@ def main(cfg: DictConfig):
     val_cfg = cfg.dataset.val
 
     # Model setup
-    model = SceneClassifier(pretrained=True, model_name=model_name, num_classes=num_classes)
+    model = SceneClassifier(pretrained=pretrained, model_name=model_name, num_classes=num_classes)
 
     # Dataset and DataLoader setup
     train_dataset = CustomDataset(image_dir=train_cfg.image_path, config_path=cfg, phase='train')
