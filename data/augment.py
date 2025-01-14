@@ -1,14 +1,9 @@
-import random
 from PIL import Image
 import torchvision.transforms.v2 as transforms
 from torchvision.transforms.functional import adjust_sharpness
-import os
 from torchvision.transforms import InterpolationMode
-import numpy as np
-from torchvision.utils import save_image
-from PIL import Image
-import torch
-import random
+from torchvision.transforms import InterpolationMode
+
 
 class LetterBoxTransform:
     def __init__(self, size, fill_value=127, interpolation=Image.Resampling.BICUBIC):
@@ -40,16 +35,10 @@ class LetterBoxTransform:
         
         return box
 
-from torchvision.transforms.functional import adjust_sharpness
-import random
-import os
-import yaml
-from PIL import Image
-from torch.utils.data import Dataset
-from torchvision.transforms import InterpolationMode
+
 
 class Augmentations:
-    def __init__(self, config_path, img_size=None, phase='train'):
+    def __init__(self, config, img_size=None, phase='train'):
         """
         Initialize augmentations based on a configuration file.
 
@@ -58,8 +47,8 @@ class Augmentations:
         - img_size: Target image size for resizing (optional).
         - phase: 'train' or 'val', determines augmentations to apply.
         """
-        with open(config_path, 'r') as f:
-            config = yaml.safe_load(f)
+        # with open(config_path, 'r') as f:
+        #     config = yaml.safe_load(f)
 
         self.phase = phase
         self.img_size = img_size
@@ -85,11 +74,13 @@ class Augmentations:
             self.crop_type = self.crop['type']
 
         self.random_invert = None
-        if config['dataset'][phase]['random_invert'].get('apply', False):
-            ri_prob = config['dataset'][phase]['random_invert']['p']
-            self.random_invert = transforms.RandomInvert(ri_prob)
+
 
         if phase == 'train':
+
+            if config['dataset'][phase]['random_invert'].get('apply', False):
+                ri_prob = config['dataset'][phase]['random_invert']['p']
+                self.random_invert = transforms.RandomInvert(ri_prob)
             # Load augmentations dynamically
             for aug in config['dataset']['augmentations']:
                 aug_type = aug['type']
@@ -128,7 +119,7 @@ class Augmentations:
             image = self.crop_fn(image, self.center_crop_ratio, self.center_crop_type)
 
         if self.crop:
-            image = self.crop(image, self.crop_ratio, self.crop_type)
+            image = self.crop_fn(image, self.crop_ratio, self.crop_type)
 
         if label == 0 and self.random_invert is not None:
             image = self.random_invert(image)

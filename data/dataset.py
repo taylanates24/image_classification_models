@@ -7,7 +7,7 @@ import numpy as np
 from torch.utils.data import Dataset
 import torchvision.transforms.v2 as T
 import os
-from augment import Augmentations
+from data.augment import Augmentations
 from torchvision.utils import save_image
 
 

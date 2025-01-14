@@ -28,9 +28,9 @@ dataset:
     image_path: 'video_type_dataset'
     #image_path: 'bbox_labels_train_squared_lt_detected_png_true'
     #image_path: 'bbox_labels_overfit'
-    batch_size: 2
+    batch_size: 1
     shuffle: True
-    num_workers: 2
+    num_workers: 1
     img_size: 180
     center_crop: 
       ratio: 0.6
@@ -40,11 +40,9 @@ dataset:
 
   val:
     image_path: 'video_type_dataset'
-    #image_path: 'bbox_labels_val_squared_lt_detected_png_true'
-    #image_path: 'bbox_labels_overfit'
-    batch_size: 2
+    batch_size: 1
     shuffle: False
-    num_workers: 2
+    num_workers: 1
     img_size: 180
     center_crop: 
       ratio: 0.6
@@ -53,7 +51,7 @@ dataset:
       type: 'upper-left'
 
 
-  augmentations: # write the desired values, and append the probability, e.g. [val1, val2, probability] or null if that augmentation won't be used.
+  augmentations: 
     - type: "RandomHorizontalFlip"
       parameters: {}
       probability: 0.5
@@ -80,5 +78,5 @@ dataset:
         scale: [0.2, 0.8]
       probability: 1
       
-  val_augmentations: # write the desired values, and append the probability, e.g. [val1, val2, probability] or null if that augmentation won't be used.
+  val_augmentations: 
 

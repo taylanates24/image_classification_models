@@ -1,5 +1,5 @@
-import argparse
-import yaml
+import hydra
+from omegaconf import DictConfig
 from model import SceneClassifier
 import torch
 from data.augment import Augmentations
@@ -14,59 +14,46 @@ from focal_loss import FocalLoss
 from datetime import datetime
 import os
 
-if __name__ == '__main__':
-    # Argument parser
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--train_cfg', type=str, default='train.yaml', help='training config file')
-    args = parser.parse_args()
-
-    # Load configuration
-    cfg_file = args.train_cfg
-    with open(cfg_file, 'r') as config:
-        opt = yaml.safe_load(config)
-
+@hydra.main(version_base=None, config_path=".", config_name="train")
+def main(cfg: DictConfig):
     # Extract configurations
-    model_name = opt['model_name']
-    optimizer_name = opt['optimizer']
-    experiment_path = opt['experiment_path']
-    num_classes = opt['num_classes']
-    loss_name = opt['loss']
-    w1 = opt['w1']
+    model_name = cfg.model_name
+    optimizer_name = cfg.optimizer
+    experiment_path = cfg.experiment_path
+    num_classes = cfg.num_classes
+    loss_name = cfg.loss
+    w1 = cfg.w1
     w2 = 1 - w1
-    gamma = opt['gamma']
-    alpha = opt['alpha']
-    weight_decay = opt['weight_decay']
-    learning_rate = opt['learning_rate']
-    val_frequency = opt['val_frequency']
-    epochs = opt['epochs']
+    gamma = cfg.gamma
+    alpha = cfg.alpha
+    weight_decay = cfg.weight_decay
+    learning_rate = cfg.learning_rate
+    val_frequency = cfg.val_frequency
+    epochs = cfg.epochs
 
     # Dataset paths and parameters
-    train_image_dir = opt['dataset']['train']['image_path']
-    train_img_size = opt['dataset']['train']['img_size']
-    train_batch_size = opt['dataset']['train']['batch_size']
-    val_image_dir = opt['dataset']['val']['image_path']
-    val_img_size = opt['dataset']['val']['img_size']
-    val_batch_size = opt['dataset']['val']['batch_size']
+    train_cfg = cfg.dataset.train
+    val_cfg = cfg.dataset.val
 
     # Model setup
     model = SceneClassifier(pretrained=True, model_name=model_name, num_classes=num_classes)
 
     # Dataset and DataLoader setup
-    train_dataset = CustomDataset(image_dir=train_image_dir, config_path=cfg_file, phase='train')
-    val_dataset = CustomDataset(image_dir=val_image_dir, config_path=cfg_file, phase='val')
+    train_dataset = CustomDataset(image_dir=train_cfg.image_path, config_path=cfg, phase='train')
+    val_dataset = CustomDataset(image_dir=val_cfg.image_path, config_path=cfg, phase='val')
 
     train_loader = torch.utils.data.DataLoader(
         train_dataset,
-        batch_size=train_batch_size,
-        shuffle=opt['dataset']['train']['shuffle'],
-        num_workers=opt['dataset']['train']['num_workers']
+        batch_size=train_cfg.batch_size,
+        shuffle=train_cfg.shuffle,
+        num_workers=train_cfg.num_workers
     )
 
     val_loader = torch.utils.data.DataLoader(
         val_dataset,
-        batch_size=val_batch_size,
-        shuffle=opt['dataset']['val']['shuffle'],
-        num_workers=opt['dataset']['val']['num_workers']
+        batch_size=val_cfg.batch_size,
+        shuffle=val_cfg.shuffle,
+        num_workers=val_cfg.num_workers
     )
 
     # Loss function
@@ -78,7 +65,7 @@ if __name__ == '__main__':
 
     # Logger and checkpoint paths
     current_dateTime = datetime.now()
-    logger_path = f"model_{model_name}_bs_{train_batch_size}_img_size_{train_img_size}_opt_{optimizer_name}_loss_{loss_name}_date_{current_dateTime}"
+    logger_path = f"model_{model_name}_bs_{train_cfg.batch_size}_img_size_{train_cfg.img_size}_opt_{optimizer_name}_loss_{loss_name}_date_{current_dateTime}"
     logger = TensorBoardLogger(experiment_path, name=logger_path)
 
     ckpt_path = os.path.join(experiment_path, logger_path)
@@ -89,7 +76,7 @@ if __name__ == '__main__':
         if optimizer_name == 'adam'
         else torch.optim.SGD(model.parameters(), lr=learning_rate, weight_decay=weight_decay, momentum=0.9)
     )
-    scheduler = get_scheduler(opt, optimizer, len(train_loader))
+    scheduler = get_scheduler(cfg, optimizer, len(train_loader))
 
     # Callbacks
     early_stopping_callback = EarlyStopping(monitor='average precision', patience=100)
@@ -110,10 +97,10 @@ if __name__ == '__main__':
         loss=loss,
         ckpt_path=ckpt_path,
         num_classes=num_classes,
-        img_size=train_img_size,
-        pred_detections_pth=opt['pred_detections_pth'],
-        annotations_pth=opt['annotations_pth'],
-        bbox_infer_dataset=opt['bbox_infer_dataset'],
+        img_size=train_cfg.img_size,
+        pred_detections_pth=cfg.pred_detections_pth,
+        annotations_pth=cfg.annotations_pth,
+        bbox_infer_dataset=cfg.bbox_infer_dataset,
         model_name=model_name
     )
 
@@ -130,3 +117,6 @@ if __name__ == '__main__':
     trainer.fit(model=classifier, train_dataloaders=train_loader, val_dataloaders=val_loader)
 
     print('Training completed.')
+
+if __name__ == '__main__':
+    main()
