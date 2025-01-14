@@ -7,8 +7,11 @@ import numpy as np
 from torch.utils.data import Dataset
 import torchvision.transforms.v2 as T
 import os
-from data.augment import Augmentations
+import sys
 from torchvision.utils import save_image
+sys.path.append('./')
+from data.augment import Augmentations
+
 
 
 class CustomDataset(Dataset):
@@ -84,5 +87,5 @@ if __name__ == "__main__":
     dataset = CustomDataset(image_dir="video_type_dataset", config_path=config_path, phase='train')
     for i in range(20):
         res = dataset.__getitem__(i)
-        save_image(res[0][[2, 1, 0], :, :], os.path.join(f'new_out_{i}_{res[2]}.png'))
+        save_image(res[0][[2, 1, 0], :, :], os.path.join(f'aug_or_new_out_{i}_{res[2]}.png'))
         print('asd')

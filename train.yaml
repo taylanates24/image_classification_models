@@ -7,13 +7,16 @@ lr_scheduler: 'cosine' # 'cosine', 'multistep_lr', 'cosine_annealing'
 loss: 'CE' # 'focal', 'CE'
 experiment_path: 'experiments'
 
-model_name: resnet18.a1_in1k
 
-num_classes: 2
+
+
 
 pred_detections_pth: '/workspaces/scene_classification/pred_boxes_42.json'
 bbox_infer_dataset: '/workspaces/scene_classification/bbox_labels_infer_squared'
 annotations_pth: 'instances_val.json'
+
+model_name: resnet18.a1_in1k
+num_classes: 2
 
 gamma: 4.491033147723654
 alpha: 0.9840537807632129
@@ -26,8 +29,6 @@ weight_decay: 0
 dataset:
   train:
     image_path: 'video_type_dataset'
-    #image_path: 'bbox_labels_train_squared_lt_detected_png_true'
-    #image_path: 'bbox_labels_overfit'
     batch_size: 1
     shuffle: True
     num_workers: 1
@@ -52,31 +53,52 @@ dataset:
 
 
   augmentations: 
+    - type: "RandomPerspective"
+      parameters:
+        distortion_scale: 0.15
+        p: 0
+    - type: "RandomAffine"
+      parameters:
+        degrees: 10
+        translate: [0.1, 0.1]
+        scale: [0.9, 1]
+        shear: 0.1
+      probability: 0
     - type: "RandomHorizontalFlip"
       parameters: {}
-      probability: 0.5
-    - type: "RandomPhotometricDistort"
-      parameters: 
-        brightness: [0.8, 1.2]
-        contrast: [0.8, 1.2]
-        saturation: [0.8, 1.2]
-      probability: 0.5
+      probability: 0
     - type: "ColorJitter"
       parameters:
         brightness: [0.8, 1.2]
         contrast: [0.8, 1.2]
         saturation: [0.8, 1.2]
         hue: 0
-      probability: 0.3
+      probability: 0
+    - type: "RandomAdjustSharpness"
+      parameters:
+        sharpness_factor: 0.5
+        p: 0.1
+    - type: "RandomAdjustSharpness"
+      parameters:
+        sharpness_factor: 2
+        p: 0.1
+      probability: 0
+    - type: "GaussianBlur"
+      parameters:
+        kernel_size: 5
+        sigma: 1
+      probability: 0
     - type: "RandomRotation"
       parameters:
         degrees: [0, 15]
-      probability: 0.4
+      probability: 0
     - type: "RandomResizedCrop"
       parameters:
         size: 180
         scale: [0.2, 0.8]
-      probability: 1
+      probability: 0
+
+    
       
   val_augmentations: 
 

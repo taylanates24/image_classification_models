@@ -3,7 +3,7 @@ import torchvision.transforms.v2 as transforms
 from torchvision.transforms.functional import adjust_sharpness
 from torchvision.transforms import InterpolationMode
 from torchvision.transforms import InterpolationMode
-
+import yaml
 
 class LetterBoxTransform:
     def __init__(self, size, fill_value=127, interpolation=Image.Resampling.BICUBIC):
@@ -47,8 +47,9 @@ class Augmentations:
         - img_size: Target image size for resizing (optional).
         - phase: 'train' or 'val', determines augmentations to apply.
         """
-        # with open(config_path, 'r') as f:
-        #     config = yaml.safe_load(f)
+        if type(config) == str:
+            with open(config, 'r') as f:
+                config = yaml.safe_load(f)
 
         self.phase = phase
         self.img_size = img_size
