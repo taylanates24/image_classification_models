@@ -12,7 +12,6 @@ sys.path.append('./')
 from data.augment import Augmentations
 
 
-
 class CustomDataset(Dataset):
     def __init__(self, image_dir, config_path, phase='train', transform=None):
         """
@@ -62,22 +61,7 @@ class CustomDataset(Dataset):
         return image
 
 
-def letter_box(image, size):
-    
-    box = np.full([size, size, image.shape[2]], 127)
-    h, w = image.shape[:2]
-    h_diff = size - h
-    w_diff = size - w
-    
-    if h_diff > w_diff:
-        
-        box[int(h_diff/2):int(image.shape[0]+h_diff/2), :image.shape[1], :] = image
 
-    else:
-        
-        box[:image.shape[0], int(w_diff/2):int(image.shape[1]+w_diff/2), :] = image
-    
-    return box
 
 
 
