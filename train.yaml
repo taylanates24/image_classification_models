@@ -7,9 +7,6 @@ lr_scheduler: 'cosine' # 'cosine', 'multistep_lr', 'cosine_annealing'
 loss: 'CE' # 'focal', 'CE'
 experiment_path: 'experiments'
 
-pred_detections_pth: '/workspaces/scene_classification/pred_boxes_42.json'
-bbox_infer_dataset: '/workspaces/scene_classification/bbox_labels_infer_squared'
-annotations_pth: 'instances_val.json'
 
 model:
   name: resnet10t.c3_in1k
