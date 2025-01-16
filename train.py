@@ -5,14 +5,13 @@ import torch
 from data.dataset import CustomDataset
 from pytorch_lightning.loggers import TensorBoardLogger
 import torch.nn as nn
-from get_optim import get_optimizer, get_scheduler, LRSchedulerEnum
+from get_optim import get_scheduler, LRSchedulerEnum
 from classifier import Classifier
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
 from focal_loss import FocalLoss
 from datetime import datetime
 import os
-
 from enum import Enum
 
 class OptimizerEnum(Enum):
