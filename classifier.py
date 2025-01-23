@@ -40,8 +40,8 @@ def draw_precision_curve(precision_baseline, precision_processed):
 
 class Classifier(pl.LightningModule):
 
-    def __init__(self, model, scheduler, optimizer, annotations_pth, bbox_infer_dataset,
-                 pred_detections_pth, loss=None, save_every_epoch=True, 
+    def __init__(self, model, scheduler, optimizer,
+                 loss=None, save_every_epoch=True, 
                  ckpt_path=None, num_classes=2, img_size=128, model_name='tf_efficientnet_lite0'):
         super().__init__()
 
@@ -54,9 +54,6 @@ class Classifier(pl.LightningModule):
         self.thresholds = np.linspace(0,1,21)
         self.num_classes = num_classes
         self.img_size = img_size
-        self.annotations_pth = annotations_pth
-        self.pred_detections_pth = pred_detections_pth
-        self.bbox_infer_dataset = bbox_infer_dataset
         self.model_name = model_name
         self.sanity_check_done = False
         self.softmax = nn.Softmax(dim=1)

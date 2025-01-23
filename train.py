@@ -153,9 +153,6 @@ def main(cfg: DictConfig):
         ckpt_path=ckpt_path,
         num_classes=num_classes,
         img_size=train_cfg.img_size,
-        pred_detections_pth=cfg.pred_detections_pth,
-        annotations_pth=cfg.annotations_pth,
-        bbox_infer_dataset=cfg.bbox_infer_dataset,
         model_name=model_name
     )
 

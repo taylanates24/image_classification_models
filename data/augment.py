@@ -124,7 +124,11 @@ class Augmentations:
         # Always apply to Tensor as the last step
         self.always_last.append(transforms.ToTensor())
 
-        self.transforms = transforms.Compose(self.transforms_list)
+        self.transforms = None
+
+        if len(self.transforms_list):
+            self.transforms = transforms.Compose(self.transforms_list)
+            
         self.always_first = transforms.Compose(self.always_first)
         self.always_last = transforms.Compose(self.always_last)
 
@@ -138,8 +142,8 @@ class Augmentations:
         if label == 0 and self.random_invert is not None:
 
             image = self.random_invert(image)
-
-        image = self.transforms(image)
+        if self.transforms is not None:
+            image = self.transforms(image)
 
         if self.center_crop:
 
